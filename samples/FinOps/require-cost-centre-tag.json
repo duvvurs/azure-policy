@@ -1,0 +1,58 @@
+{
+  "name": "require-cost-centre-tag",
+  "properties": {
+    "displayName": "FinOps — Require cost-centre tag on resources",
+    "description": "Enforces cost-centre tag for accurate showback/chargeback cost allocation. Resources without this tag cannot be cost-attributed to business units. Apply at Management Group scope for organisation-wide enforcement.",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "FinOps",
+      "version": "1.0.0",
+      "author": "Duvvur Sai Krishna"
+    },
+    "parameters": {
+      "tagName": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Name",
+          "description": "Name of the tag to require on all resources"
+        },
+        "defaultValue": "cost-centre"
+      },
+      "tagValuePattern": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Tag Value Pattern",
+          "description": "Regex pattern for valid cost-centre values (e.g. ENG-0456)"
+        },
+        "defaultValue": "^[A-Z]{2,4}-[0-9]{3,6}$"
+      },
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Start with Audit, escalate to Deny after compliance >85%"
+        },
+        "allowedValues": ["Audit", "Deny"],
+        "defaultValue": "Audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "anyOf": [
+          {
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "exists": "false"
+          },
+          {
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "equals": ""
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
+}

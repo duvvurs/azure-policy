@@ -1,0 +1,31 @@
+{
+  "name": "require-budget-on-subscription",
+  "properties": {
+    "displayName": "FinOps — Require budget on subscription",
+    "description": "Ensures every subscription has at least one cost budget configured. Subscriptions without budgets have no automated spend alerting — a governance gap that allows uncontrolled cost growth.",
+    "policyType": "Custom",
+    "mode": "Microsoft.Subscription/Subscriptions",
+    "metadata": {
+      "category": "FinOps",
+      "version": "1.0.0",
+      "author": "Duvvur Sai Krishna"
+    },
+    "parameters": {},
+    "policyRule": {
+      "if": {
+        "field": "type",
+        "equals": "Microsoft.Resources/subscriptions"
+      },
+      "then": {
+        "effect": "AuditIfNotExists",
+        "details": {
+          "type": "Microsoft.Consumption/budgets",
+          "existenceCondition": {
+            "field": "Microsoft.Consumption/budgets/timeGrain",
+            "equals": "Monthly"
+          }
+        }
+      }
+    }
+  }
+}
